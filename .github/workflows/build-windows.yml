@@ -58,5 +58,3 @@ jobs:
         name: melonDS-windows-i686
         # path: .\build\release-mingw-i686\melonDS.exe
         path: ${{runner.workspace}}\build\melonDS.exe
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-i686-mingw-${{ hashFiles('vcpkg.json') }}
