@@ -30,8 +30,14 @@ For now, <i>the instructions are for Windows only.</i>
    ```
 6. Install the required dependencies:
    ```bash
-   pacman -S i686-missing/*
-   pacman -S make mingw-w64-i686-{toolchain,cmake,SDL2,libarchive,enet,zstd,faad2}
+   # We install these packages manually because MSYS2 seems to not be able to find them
+   pacman -U https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-qt5-static-5.15.15-2-any.pkg.tar.zst
+   pacman -U https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-mesa-24.3.3-1-any.pkg.tar.zst
+   pacman -U https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-libslirp-4.9.1-1-any.pkg.tar.zst
+   pacman -U https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-faad2-2.11.2-1-any.pkg.tar.zst
+
+   # The rest are just taken from the regular build instructions
+   pacman -S make mingw-w64-i686-{toolchain,cmake,SDL2,libarchive,enet,zstd}
    ```
 7. Configure and make:
    ```bash
