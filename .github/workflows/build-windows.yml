@@ -1,6 +1,6 @@
 name: Windows x86
 
-on: [workflow_dispatch]
+on:
   push:
     paths-ignore:
       - ".gitignore"
