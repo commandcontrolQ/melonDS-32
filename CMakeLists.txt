@@ -9,7 +9,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultBuildFlags.cmake")
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
+# set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
 
 option(USE_VCPKG "Use vcpkg for dependency packages" OFF)
 if (USE_VCPKG)
@@ -18,8 +18,8 @@ endif()
 
 project(melonDS
     VERSION 1.1
-    DESCRIPTION "DS emulator, sorta"
-    HOMEPAGE_URL "https://melonds.kuribo64.net"
+    DESCRIPTION "DS emulator, sorta (32-bit)"
+    HOMEPAGE_URL "https://kooper.online/misc/mds-32/"
     LANGUAGES C CXX)
 
 include(CheckSymbolExists)
@@ -35,6 +35,9 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+set(CMAKE_C_FLAGS_RELEASE "-Ofast -march=westmere")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=westmere")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -79,11 +82,12 @@ if (ENABLE_LTO)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-if (NOT APPLE)
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s")
+if (NOT WIN32)
+    message(FATAL_ERROR "Builds are currently not supported on your operating system! Supported: Windows")
 endif()
 
 if (WIN32)
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s -Wl,--allow-multiple-definintion")
     option(BUILD_STATIC "Statically link dependencies" OFF)
     add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
     if (NOT MINGW)
