@@ -1,57 +1,62 @@
-name: Windows
+name: Windows x86
 
-on:
+on: [workflow_dispatch]
   push:
-    branches:
-      - master
-      - ci/*
+    paths-ignore:
+      - ".gitignore"
+      - "docs/**"
+      - "README"
+      - "CREDITS.TXT"
+      - "COPYING_GLIB"
+      - "COPYING.LGPL2"
+      - "AUTHORS.TXT"
+      - "CHANGELOG"
+      - "COPYING"
   pull_request:
-    branches:
-      - master
 
 env:
   MELONDS_GIT_BRANCH: ${{ github.ref }}
   MELONDS_GIT_HASH: ${{ github.sha }}
   MELONDS_BUILD_PROVIDER: GitHub Actions
-#  MELONDS_VERSION_SUFFIX: " RC"
+  BUILD_TYPE: Release
 
 jobs:
   build:
-    runs-on: windows-2025
+    runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}
-    env:
-      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg_cache,readwrite
     steps:
     - name: Check out sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v1
+    
     - name: Set up MSYS2
       uses: msys2/setup-msys2@v2
       with:
-        msystem: ucrt64
+        msystem: MINGW32
         update: true
-        pacboy: gcc:p cmake:p ninja:p make:p
-    - name: Restore vcpkg cache
-      uses: actions/cache/restore@v4
-      with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-x86_64-mingw-${{ hashFiles('vcpkg.json') }}
-        restore-keys: vcpkg-x86_64-mingw-
-    - name: Set up vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgJsonGlob: vcpkg.json
+
+    - name: Install dependencies
+      run: pacman -Sq --noconfirm git make mingw-w64-i686-{cmake,mesa,SDL2,qt5-static,libslirp,libarchive,libepoxy,toolchain}
+
+    - name: Create build env
+      working-directory: ${{runner.workspace}}
+      run: mkdir build
+    
     - name: Configure
-      run: cmake --preset=release-mingw-x86_64 -DMELONDS_EMBED_BUILD_INFO=ON
+      working-directory: ${{runner.workspace}}/build
+      # run: cmake --preset=release-mingw-i686 -DMELONDS_EMBED_BUILD_INFO=ON
+      run: cmake $GITHUB_WORKSPACE -G 'MSYS Makefiles' -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_STATIC=ON -DCMAKE_PREFIX_PATH=C:/tools/msys64/mingw64/qt5-static
+    
     - name: Build
-      run: cmake --build --preset=release-mingw-x86_64
-    - uses: actions/upload-artifact@v4
+      working-directory: ${{runner.workspace}}/build
+      # run: cmake --build --preset=release-mingw-i686
+      run: make -j$(nproc --all)
+      
+    - uses: actions/upload-artifact@v1
       with:
-        name: melonDS-windows-x86_64
-        path: .\build\release-mingw-x86_64\melonDS.exe
-    - name: Save vcpkg cache
-      uses: actions/cache/save@v4
-      with:
+        name: melonDS-windows-i686
+        # path: .\build\release-mingw-i686\melonDS.exe
+        path: ${{runner.workspace}}\build\melonDS.exe
         path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-x86_64-mingw-${{ hashFiles('vcpkg.json') }}
+        key: vcpkg-i686-mingw-${{ hashFiles('vcpkg.json') }}
