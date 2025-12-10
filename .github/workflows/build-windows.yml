@@ -28,7 +28,7 @@ jobs:
         shell: msys2 {0}
     steps:
     - name: Check out sources
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
     
     - name: Set up MSYS2
       uses: msys2/setup-msys2@v2
@@ -53,7 +53,7 @@ jobs:
       # run: cmake --build --preset=release-mingw-i686
       run: make -j$(nproc --all)
       
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v3
       with:
         name: melonDS-windows-i686
         # path: .\build\release-mingw-i686\melonDS.exe
