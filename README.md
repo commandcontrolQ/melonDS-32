@@ -37,11 +37,10 @@ For now, <i>the instructions are for Windows only.</i>
    pacman -U https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-faad2-2.11.2-1-any.pkg.tar.zst
 
    # The rest are just taken from the regular build instructions
-   pacman -S make mingw-w64-i686-{toolchain,cmake,SDL2,libarchive,enet,zstd}
+   pacman -S cmake make mingw-w64-i686-{toolchain,cmake,SDL2,libarchive,enet,zstd}
    ```
 7. Configure and make:
    ```bash
-   mkdir build && cd build
    cmake -B build -DBUILD_STATIC=ON -DUSE_QT6=OFF -DCMAKE_PREFIX_PATH=$MSYSTEM_PREFIX/qt5-static -DCMAKE_BUILD_TYPE=Release ..
    cmake --build build -j$(nproc --all)
    ```
