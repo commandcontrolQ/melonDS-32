@@ -16,7 +16,30 @@ The goal is to do things right and fast, akin to blargSNES (but hopefully better
 
 For how to use melonDS (and also what is planned for the future) please refer to [the official repository.](https://github.com/melonDS-emu/melonDS)
 
-The building process is also slightly different, see [BUILD.md](./BUILD.md) for build instructions.
+## Build
+
+For now, <i>the instructions are for Windows only.</i>
+
+1. Install [MSYS2](https://www.msys2.org/)
+2. Open the **MSYS2 MinGW 32-bit** terminal
+3. Update the packages using `pacman -Syu` and reopen the terminal if it asks you to
+4. Download the repository:
+   ```bash
+   pacman -S git
+   git clone https://github.com/commandcontrolQ/melonDS-32.git && cd melonDS-32
+   ```
+6. Install the required dependencies:
+   ```bash
+   pacman -S i686-missing/*
+   pacman -S make mingw-w64-i686-{toolchain,cmake,SDL2,libarchive,enet,zstd,faad2}
+   ```
+7. Configure and make:
+   ```bash
+   mkdir build && cd build
+   cmake -B build -DBUILD_STATIC=ON -DUSE_QT6=OFF -DCMAKE_PREFIX_PATH=$MSYSTEM_PREFIX/qt5-static -DCMAKE_BUILD_TYPE=Release ..
+   cmake --build build -j$(nproc --all)
+   ```
+
 
 ## Credits
 
